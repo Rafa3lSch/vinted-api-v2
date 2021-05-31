@@ -8,57 +8,6 @@ const Offer = require("../models/Offer");
 
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
-router.post("/offer/publish", isAuthenticated, async (req, res) => {
-  try {
-    const { title, description, price, condition, city, brand, size, color } =
-      req.fields;
-
-    const newOffer = new Offer({
-      product_name: title,
-      product_description: description,
-      product_price: price,
-      product_details: [
-        {
-          MARQUE: brand,
-        },
-        {
-          TAILLE: size,
-        },
-        {
-          ÉTAT: condition,
-        },
-        {
-          COULEUR: color,
-        },
-        {
-          EMPLACEMENT: city,
-        },
-      ],
-      owner: req.user,
-    });
-
-    const result = await cloudinary.uploader.upload(req.files.picture.path, {
-      folder: `/vinted/offers/${newOffer._id}`,
-    });
-    newOffer.product_image = result;
-    await newOffer.save();
-    res.status(200).json({
-      _id: newOffer._id,
-      product_name: newOffer.product_name,
-      product_description: newOffer.product_description,
-      product_price: newOffer.product_price,
-      product_description: newOffer.product_description,
-      owner: {
-        account: newOffer.owner.account,
-        _id: newOffer.owner._id,
-      },
-      product_image: newOffer.product_image,
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
 router.get("/offers", async (req, res) => {
   try {
     let filters = {};
@@ -109,6 +58,57 @@ router.get("/offers", async (req, res) => {
     res.json({
       count: count,
       offers: offers,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.post("/offer/publish", isAuthenticated, async (req, res) => {
+  try {
+    const { title, description, price, condition, city, brand, size, color } =
+      req.fields;
+
+    const newOffer = new Offer({
+      product_name: title,
+      product_description: description,
+      product_price: price,
+      product_details: [
+        {
+          MARQUE: brand,
+        },
+        {
+          TAILLE: size,
+        },
+        {
+          ÉTAT: condition,
+        },
+        {
+          COULEUR: color,
+        },
+        {
+          EMPLACEMENT: city,
+        },
+      ],
+      owner: req.user,
+    });
+
+    const result = await cloudinary.uploader.upload(req.files.picture.path, {
+      folder: `/vinted/offers/${newOffer._id}`,
+    });
+    newOffer.product_image = result;
+    await newOffer.save();
+    res.status(200).json({
+      _id: newOffer._id,
+      product_name: newOffer.product_name,
+      product_description: newOffer.product_description,
+      product_price: newOffer.product_price,
+      product_description: newOffer.product_description,
+      owner: {
+        account: newOffer.owner.account,
+        _id: newOffer.owner._id,
+      },
+      product_image: newOffer.product_image,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
