@@ -64,6 +64,19 @@ router.get("/offers", async (req, res) => {
   }
 });
 
+router.get("/offer/:id", async (req, res) => {
+  try {
+    const offer = await Offer.findById(req.params.id).populate({
+      path: "owner",
+      select: "account.username account.phone account.avatar",
+    });
+    res.json(offer);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+});
+
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
     const { title, description, price, condition, city, brand, size, color } =
@@ -112,19 +125,6 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
-  }
-});
-
-router.get("/offer/:id", async (req, res) => {
-  try {
-    const offer = await Offer.findById(req.params.id).populate({
-      path: "owner",
-      select: "account.username account.phone account.avatar",
-    });
-    res.json(offer);
-  } catch (error) {
-    console.log(error.message);
-    res.status(400).json({ message: error.message });
   }
 });
 
