@@ -10,11 +10,6 @@ const app = express();
 app.use(formidable());
 app.use(cors());
 
-const userRoutes = require("./routes/user");
-app.use(userRoutes);
-const offerRoutes = require("./routes/offer");
-app.use(offerRoutes);
-
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -26,6 +21,11 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+const userRoutes = require("./routes/user");
+app.use(userRoutes);
+const offerRoutes = require("./routes/offer");
+app.use(offerRoutes);
 
 app.get("/", (req, res) => {
   res.json("Bienvenue sur l'API de Vinted");
